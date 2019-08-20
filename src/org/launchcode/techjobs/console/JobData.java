@@ -57,16 +57,17 @@ public class JobData {
     /**
      * Returns results of search the jobs data by key/value, using
      * inclusion of the search term.
-     *
+     * <p>
      * For example, searching for employer "Enterprise" will include results
      * with "Enterprise Holdings, Inc".
      *
-     * @param column   Column that should be searched.
-     * @param value Value of teh field to search for
+     * @param column Column that should be searched.
+     * @param value  Value of teh field to search for
      * @return List of all jobs matching the criteria
      */
     public static ArrayList<HashMap<String, String>> findByColumnAndValue(String column, String value) {
 
+        value = value.toLowerCase();
         // load data, if not already loaded
         loadData();
 
@@ -76,13 +77,35 @@ public class JobData {
 
             String aValue = row.get(column);
 
-            if (aValue.contains(value)) {
+            if (aValue.toLowerCase().matches(value)) {
                 jobs.add(row);
             }
         }
 
         return jobs;
     }
+
+
+    public static ArrayList<HashMap<String, String>> findByValue(String searchTerm) {
+
+        searchTerm = searchTerm.toLowerCase();
+
+        loadData();
+
+        ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
+
+        for (HashMap<String, String> row : allJobs) {
+            for (String term : row.keySet()) {
+                if (row.get(term).toLowerCase().matches(searchTerm)) {
+                    jobs.add(row);
+                    break;
+                }
+            }
+        }
+
+        return jobs;
+    }
+
 
     /**
      * Read in data from a CSV file and store it in a list
@@ -124,5 +147,5 @@ public class JobData {
             e.printStackTrace();
         }
     }
-
 }
+
